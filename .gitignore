@@ -1,0 +1,4 @@
+.DS_Store
+*.log
+screenshots/tmp/
+*.postman_environment.json.bak
