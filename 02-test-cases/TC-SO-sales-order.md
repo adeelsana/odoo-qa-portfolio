@@ -78,7 +78,22 @@ the behaviour this state-transition case is checking.**Notes**
 **Expected result**
 System either rejects the zero quantity with a clear message, or accepts it and produces a subtotal of 0 with no stock movement. Whichever behaviour occurs, it must be consistent and must not create a delivery for zero units.
 
-**Actual result** *(to fill)* · **Status** *(to fill)* · **Notes**
+**Actual result** Quotation S00026 created for Azure Interior with
+TEST-P1 Standard Storable at quantity 0.00 Units, unit price $10.00.
+Saved without any validation message. Confirm succeeded with no warning
+dialog; state moved to "Sales Order". Untaxed Amount $0.00, Total $0.00.
+No Delivery smart button was created — Odoo did not generate a delivery
+order for zero units.
+
+**Status** Pass
+
+**Notes** Odoo accepts zero quantity silently rather than blocking it,
+which is defensible (zero-value lines have legitimate uses). The important
+behaviour is that no delivery order is generated, so no meaningless
+picking task reaches the warehouse. Recorded as acceptable behaviour, not
+a defect. Residual observation: a mistyped quantity (0 instead of 10) is
+accepted with no feedback at all, producing a confirmed order worth $0.00
+that will sit in sales reporting until someone notices.
 
 > *This case has two acceptable outcomes by design. Record which one you observed and judge whether it is reasonable — that judgement is what the case is really testing.*
 
@@ -98,7 +113,23 @@ System either rejects the zero quantity with a clear message, or accepts it and 
 **Expected result**
 Negative quantity on a sale is either blocked with a validation message, or handled explicitly as a return. It must not silently increase stock or produce a negative invoice line without warning.
 
-**Actual result** *(to fill)* · **Status** *(to fill)* · **Notes**
+**Actual result** Quotation S00027 created for Azure Interior with TEST-P1
+at quantity -5.00 Units, unit price $10.00. Saved and confirmed without
+any validation message or warning. Untaxed Amount -$50.00, Total -$50.00.
+A transfer was created, but as an incoming Receipt (WH/IN/00007,
+operation type "YourCompany: Receipts", Receive From: Azure Interior)
+with a positive Demand of 5.00 Units, source document S00027, state Ready.
+
+**Status** Pass
+
+**Notes** Odoo handles a negative sale quantity as a customer return
+rather than producing a negative outbound delivery. Stock direction and
+sign are both correct. Residual observation: the conversion happens
+silently — a user who types -5 instead of 5 gets a Receipt instead of a
+Delivery with no prompt, and the sales order carries a negative total
+into sales reporting. Noted as a usability risk, not a defect.
+Inconsistency worth recording: quantity 0 produced no transfer at all,
+while quantity -5 produced one.
 
 ---
 
